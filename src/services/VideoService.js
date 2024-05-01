@@ -15,6 +15,20 @@ class VideoService {
         client.post("/video/crop/", requestBody, {"params": queryParameters});
     }
 
+    transcribe(filename) {
+        const queryParameters = {"filename": filename};
+
+        return client.post("/video/transcribing-audio/", null, {"params": queryParameters})
+            .then(response => response.data)
+    }
+
+    getResult(taskId) {
+        const queryParameters = {"taskId": taskId};
+
+        return client.get("/video/tasks/result/", {"params": queryParameters})
+            .then(response => response.data);
+    }
+
 }
 
 export default new VideoService();
