@@ -7,7 +7,7 @@ class FileUploader {
         videos.forEach(video => {
             let formData = new FormData();
             formData.append("file", video.source);
-            response = client.post("/upload/", formData, {
+            response = client.post("/files/", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
