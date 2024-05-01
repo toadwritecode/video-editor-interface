@@ -8,14 +8,6 @@ export default createStore({
     getters: {
         getServerUrl: (state) => {
             return state.apiUrl;
-        },
-        getFiles: (state) => {
-            return state.files;
-        }
-    },
-    mutations: {
-        addFile(state, data) {
-            state.files[data.index] = data.file;
         }
     }
 });

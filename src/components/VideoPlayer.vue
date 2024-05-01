@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <video ref="video" controls></video>
+    <video :src="`http://localhost:8000/files/${id}`" ref="video" controls></video>
   </div>
 
   <div class="control-container">
@@ -26,29 +26,18 @@
 
 <script>
 import videoService from "@/services/VideoService.js";
-import store from "@/store/index.js";
 
 export default {
-  props: ["id"],
+  props: ['id'],
   data() {
     return {
       intervals: [],
-      videoSrc: "",
       startTime: 0,
       endTime: 0,
     };
   },
-  mounted() {
-    this.loadVideo();
-  },
   methods: {
-    loadVideo() {
-      const video = this.$refs.video;
-      video.src = store.getters.getFiles[this.id].path;
-      video.load();
-    },
     addTimeCode() {
-      console.log(this.intervals);
       const start = parseFloat(this.startTime);
       const end = parseFloat(this.endTime);
 
@@ -86,7 +75,7 @@ export default {
     },
 
     cropVideo() {
-      videoService.cropVideo(this.intervals, this.videoSrc)
+      videoService.cropVideo(this.intervals, this.id)
     }
   },
 };
@@ -103,6 +92,7 @@ export default {
 
 .container video {
   width: 100%;
+  height: 500px;
 }
 
 .cut-container {

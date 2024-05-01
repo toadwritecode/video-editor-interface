@@ -8,6 +8,7 @@ const routes = [
         path: "/video-player/:id",
         name: "Video Player",
         component: () => VideoPlayer,
+        props: true
     },
     {
         path: "/file-upload",

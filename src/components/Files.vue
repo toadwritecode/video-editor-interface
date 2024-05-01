@@ -1,6 +1,5 @@
 <script>
   import fileService from "@/services/FileService.js";
-  import store from "@/store/index.js";
 
   export default {
     data() {
@@ -10,9 +9,7 @@
     },
 
     created() {
-      fileService.findAll().then(response => {
-        this.videos = response;
-      });
+      fileService.findAll().then(response => this.videos = response);
     },
 
   }
@@ -23,7 +20,7 @@
   <div class="container">
     <div class="card" v-for="(video, index) in videos" :key="index">
       <img src="../assets/video-temp.png" alt="">
-      <img @click="this.$router.push({name: 'Video Player', params: {id: video.name}})" class = "pencil" src="../assets/icons8-pencil.svg" width="22px">
+      <img @click="this.$router.push({name: 'Video Player', params: {id: video.name}})" class = "pencil" src="../assets/icons8-pencil.svg" width="22px" alt="">
       <p>{{video.name}}</p>
     </div>
   </div>
