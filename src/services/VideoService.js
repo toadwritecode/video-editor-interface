@@ -29,6 +29,12 @@ class VideoService {
             .then(response => response.data);
     }
 
+    exactAudio(fileName){
+        const queryParameters = {"filename": fileName};
+         return client.post("/video/exacting-audio/", null, {"params": queryParameters})
+    .then(response => response.data);
+    }
+
 }
 
 export default new VideoService();

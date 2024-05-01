@@ -6,6 +6,10 @@ class FileService {
         return client.get("/files/")
             .then(response => response.data)
     }
+    getFile(fileName) {
+        return client.get(`/files/${fileName}`)
+      .then(response => response.data)
+    }
 
 }
 
