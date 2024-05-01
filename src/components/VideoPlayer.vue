@@ -16,10 +16,11 @@
         <div class="interval">{{interval.start}}</div>
         <div class="interval">{{interval.end}}</div>
         <div class="play" @click="play(index)"><img src="../assets/icons8-play-button-48.png" alt="" width="32"></div>
+        <img class="delete" @click="deleteImage" src="../assets/bascket.png" width="36px"/>
       </div>
     </div>
 
-    <button class="add-interval-button" @click="cropVideo">Обрезать видео</button>
+    <button class="cut-button" @click="cropVideo">Обрезать видео</button>
   </div>
 
 </template>
@@ -37,6 +38,10 @@ export default {
     };
   },
   methods: {
+    deleteImage(index) {
+      this.intervals.splice(index, 1);
+    },
+
     addTimeCode() {
       const start = parseFloat(this.startTime);
       const end = parseFloat(this.endTime);
@@ -124,7 +129,7 @@ export default {
   color: #fe0000;
 }
 
-.add-interval-button {
+.add-interval-button, .cut-button {
   outline: 0;
   border: 0;
   color: #fff;
@@ -141,6 +146,7 @@ export default {
 .intervals {
   margin-top: 25px;
   display: flex;
+  position: relative;
 }
 
 .interval {
@@ -157,6 +163,18 @@ export default {
   width: 540px;
   display: flex;
   flex-wrap: wrap;
+}
+
+.delete {
+  position: absolute;
+  z-index: 999;
+  left: 225px;
+  top: -1px;
+  color: #fe0000;
+}
+
+.cut-button {
+  margin-top: 25px;
 }
 
 </style>
