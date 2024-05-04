@@ -1,4 +1,5 @@
 import client from "@/api/axios-base.js";
+import store from "@/store/index.js";
 
 class FileService {
 
@@ -6,9 +7,8 @@ class FileService {
         return client.get("/files/")
             .then(response => response.data)
     }
-    getFile(fileName) {
-        return client.get(`/files/${fileName}`)
-      .then(response => response.data)
+    async getFile(fileName) {
+        return await fetch(`${store.getters.getServerUrl}/files/${fileName}`).then(r => r.blob())
     }
 
 }
