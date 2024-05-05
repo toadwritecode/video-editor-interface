@@ -16,21 +16,19 @@
       fileService.findAll().then(response => this.videos = response);
     },
     methods: {
-      downloadFile(fileName) {
+      async downloadFile(fileName) {
         let videoUrl = '';
-        fileService.getFile(fileName)
-            .then(response => response.data.blob())
-      .then(blob => {
-        videoUrl = window.URL.createObjectURL(blob);
-      })
+        let blob = fileService.getFile(fileName);
 
-      const link = document.createElement('a');
-      link.href = videoUrl;
-      link.setAttribute('download', fileName);
+        videoUrl = window.URL.createObjectURL(await blob);
 
-      link.click();
-      window.URL.revokeObjectURL(videoUrl);
-    },
+        const link = document.createElement('a');
+        link.href = videoUrl;
+        link.setAttribute('download', fileName);
+
+        link.click();
+        window.URL.revokeObjectURL(videoUrl);
+      },
       transcribeVideo(filename) {
       videoService.transcribe(filename).then(transcribeResponse => {
         const interval = setInterval(() => {
