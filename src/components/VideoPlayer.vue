@@ -96,6 +96,7 @@ export default {
 }
 
 .container video {
+  margin-top: 80px;
   width: 100%;
   height: 500px;
 }

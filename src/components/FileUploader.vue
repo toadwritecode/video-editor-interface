@@ -37,7 +37,6 @@
       },
 
       addFilesToQueue(files) {
-        console.log("А?")
         if (files.length === 0) return;
         for (let i = 0; i < files.length; i++) {
           if (!this.videos.some((video) => video.name === files[i].name)) {
@@ -65,9 +64,6 @@
 
 <template>
   <div class="card">
-    <div class="top">
-      <p>Загрузка видео</p>
-    </div>
     <div class="drag-area" @dragover.prevent="onDragOver" @dragleave.prevent="onDragLeave" @drop.prevent="onDrop">
       <span v-if="!isDragging">
         Перетащте видео сюда или
@@ -90,14 +86,16 @@
     </div>
     <div class="video-download-container">
       <input v-if="this.videos.length === 0" v-model="videoUrl" class="video-url" type="text" placeholder="Вставьте ссылку на видео">
-      <button type="button" @click="sendFiles">Загрузить</button>
+      <button class="btn" type="button" @click="sendFiles">Загрузить</button>
     </div>
   </div>
 </template>
 
 <style scoped>
   .card {
-    width: 100%;
+    min-height: 400px;
+    width: 95%;
+    margin: 50px auto 0;
     padding: 10px;
     box-shadow: 0 0 5px #ffdfdf;
     border-radius: 5px;
@@ -165,12 +163,12 @@
   }
 
   .card .container .image {
-    width: 75px;
+    width: 150px;
     height: 75px;
-    margin-top: 15px;
-    margin-right: 30px;
-    margin-bottom: 8px;
+    margin-top: 20px;
     position: relative;
+    overflow-wrap: break-word;
+    text-align: center;
   }
 
   .card .container .image video {
@@ -182,7 +180,7 @@
   .card .container .image span {
     position: absolute;
     top: -4px;
-    right: -15px;
+    right: 30px;
     font-size: 20px;
     cursor: pointer;
   }
@@ -202,7 +200,7 @@
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    margin-bottom: 12px;
+    margin: 25px 0;
   }
 
   .video-download-container .video-url {
@@ -227,8 +225,15 @@
   }
 
   .image p {
-    overflow-wrap: break-word;
     max-width: 130px;
+  }
+
+  .btn {
+    margin-left: 15px;
+  }
+
+  .container {
+    min-height: 120px;
   }
 
 </style>

@@ -11,7 +11,7 @@ const routes = [
         props: true
     },
     {
-        path: "/file-upload",
+        path: "/",
         name: "File Upload",
         component: () => FileUploader,
     },

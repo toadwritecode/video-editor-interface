@@ -1,15 +1,17 @@
 <script setup>
-import FileUploader from "@/components/FileUploader.vue";
-import Files from "@/components/Files.vue";
-import VideoPlayer from "@/components/VideoPlayer.vue";
+import Navbar from "@/components/Navbar.vue";
 </script>
 
 <template>
   <main>
+    <Navbar></Navbar>
     <router-view />
   </main>
 </template>
 
-<style scoped>
-
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
 </style>
