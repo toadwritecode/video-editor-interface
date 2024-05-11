@@ -7,6 +7,7 @@
     <div class="cut-container">
       <input v-model="startTime" class="interval-select" type="text" placeholder="Время от">
       <input v-model="endTime" class="interval-select" type="text" placeholder="Время до">
+      <input v-model="times" class="interval-select" type="text" placeholder="Кол-во повторов">
 
       <button class="add-interval-button" @click="addTimeCode">Добавить промежуток</button>
     </div>
@@ -33,8 +34,9 @@ export default {
   data() {
     return {
       intervals: [],
-      startTime: 0,
-      endTime: 0,
+      startTime: null,
+      endTime: null,
+      times: null
     };
   },
   methods: {
@@ -45,6 +47,7 @@ export default {
     addTimeCode() {
       const start = parseFloat(this.startTime);
       const end = parseFloat(this.endTime);
+      const times = parseFloat(this.times);
 
       let invalidInterval = false;
       for (const interval of this.intervals) {
@@ -57,7 +60,7 @@ export default {
         return;
       }
 
-      this.intervals.push({"start": start, "end": end})
+      this.intervals.push({"start": start, "end": end, "times": times});
     },
     play(index) {
       const frame = this.intervals[index]

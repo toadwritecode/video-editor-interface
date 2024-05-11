@@ -1,7 +1,15 @@
 <script>
   import fileUploader from "@/services/FileUploader.js";
+  import store from "@/store/index.js";
+  import Signup from "@/components/SignUp.vue";
 
   export default {
+    components: {Signup},
+    computed: {
+      store() {
+        return store
+      }
+    },
     data(){
       return {
         videos: [],
@@ -15,7 +23,6 @@
       },
 
       onFileSelect(event) {
-        console.log(" B")
         this.addFilesToQueue(event.target.files)
       },
 
@@ -63,7 +70,7 @@
 </script>
 
 <template>
-  <div class="card">
+  <div v-if="store.getters.isAuthenticated" class="card">
     <div class="drag-area" @dragover.prevent="onDragOver" @dragleave.prevent="onDragLeave" @drop.prevent="onDrop">
       <span v-if="!isDragging">
         Перетащте видео сюда или
@@ -88,6 +95,9 @@
       <input v-if="this.videos.length === 0" v-model="videoUrl" class="video-url" type="text" placeholder="Вставьте ссылку на видео">
       <button class="btn" type="button" @click="sendFiles">Загрузить</button>
     </div>
+  </div>
+  <div v-else class="unauthorized">
+    <Signup></Signup>
   </div>
 </template>
 
@@ -234,6 +244,11 @@
 
   .container {
     min-height: 120px;
+  }
+
+  .unauthorized {
+    margin-top: 50px;
+    text-align: center;
   }
 
 </style>

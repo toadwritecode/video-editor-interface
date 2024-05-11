@@ -15,13 +15,13 @@
 
       <div class="header__service">
         <a
-          v-show="!$store.getters.loggedIn"
+          v-show="!$store.getters.isAuthenticated"
           @click="showModalLogin = true"
           class="nav__link nav__link--service">
-          Вход и регистрация
+          Войти
         </a>
       </div>
-      <div v-show="$store.getters.loggedIn" class="header__creation">
+      <div v-show="$store.getters.isAuthenticated" class="header__creation">
         <a @click="logout" class="creation__link creation__link--exit">Выход</a>
       </div>
     </div>
@@ -113,7 +113,7 @@ export default {
           })
           .then(() => {
             this.wrongCred = false;
-            this.$router.push({ name: "Adverts" });
+            this.$router.push({ name: "File Upload" });
           })
           .catch((err) => {
             console.log(err);
@@ -133,7 +133,7 @@ export default {
     logout() {
       this.$store.dispatch("logoutUser")
           .then(() => {
-            this.$router.push({ name: "Adverts" });
+            this.$router.push({ name: "File Upload" });
           });
     },
   },

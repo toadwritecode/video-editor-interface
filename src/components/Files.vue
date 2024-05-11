@@ -2,35 +2,44 @@
   import fileService from "@/services/FileService.js";
   import videoService from "@/services/VideoService.js";
   import modal from "@/components/Modal.vue";
+  import store from "@/store/index.js";
+  import Signup from "@/components/SignUp.vue";
   export default {
-    components: {modal},
+    computed: {
+      store() {
+        return store
+      }
+    },
+    components: {Signup, modal},
     data() {
       return {
         currentVideoInModal: "",
         showModal: false,
-        videos: {},
+        videos: [],
       };
     },
 
-    created() {
-      fileService.findAll().then(response => this.videos = response);
+    async created() {
+      const files = await fileService.findAll();
+      for (const file of files) {
+        const fileId = await fileService.generateFileId(file['name']);
+        this.videos.push(
+            {
+              id: fileId,
+              name: file['name'],
+              path: file['path'],
+              format: file['format']
+            }
+        );
+      }
     },
+
     methods: {
       async downloadFile(fileName) {
-        let videoUrl = '';
-        let blob = fileService.getFile(fileName);
-
-        videoUrl = window.URL.createObjectURL(await blob);
-
-        const link = document.createElement('a');
-        link.href = videoUrl;
-        link.setAttribute('download', fileName);
-
-        link.click();
-        window.URL.revokeObjectURL(videoUrl);
+        fileService.getFile(fileName);
       },
       transcribeVideo(filename) {
-      videoService.transcribe(filename).then(transcribeResponse => {
+        videoService.transcribe(filename).then(transcribeResponse => {
         const interval = setInterval(() => {
           console.log("Таска запущена")
           videoService.getResult(transcribeResponse.taskId)
@@ -41,20 +50,19 @@
                 }
               });
         }, 10000)});
-    },
-       downloadAudio(filename) {
-      videoService.exactAudio(filename).then(taskResponse => {
-        const interval = setInterval(() => {
-          console.log("Таска запущена")
-          videoService.getResult(taskResponse.taskId)
-              .then(response => {
-                if (response.status === "ok") {
-                  this.downloadFile(response.result)
-                  clearInterval(interval);
-                }
-              });
+      },
+      extractAudio(filename) {
+        videoService.extractAudio(filename).then(taskResponse => {
+          const interval = setInterval(() => {
+            videoService.getResult(taskResponse.taskId)
+                .then(response => {
+                  if (response.status === "ok") {
+                    this.downloadFile(response.result)
+                    clearInterval(interval);
+                  }
+                });
         }, 10000)});
-    },
+      },
       playAudio(index) {
         const ref = "audio_" + index;
         let audio = document.getElementById(ref);
@@ -67,7 +75,6 @@
         audio.play();
       },
       playVideoInModal(name) {
-        console.log("Тест")
         this.currentVideoInModal = "http://localhost:8000/files/" + name;
         this.showModal = true;
       }
@@ -76,7 +83,7 @@
 </script>
 
 <template>
-  <div class="container">
+  <div v-if="store.getters.isAuthenticated" class="container">
     <div class="card" v-for="(video, index) in videos" :key="index">
 
       <!-- Поддерживаются форматы .mp4 и .wav -->
@@ -85,19 +92,19 @@
         <!-- Если это аудио файл формата .wav -->
         <div class="video-card" v-if="video.format === 'wav'">
           <img src="../assets/wav-file.png" alt="Значок файла формата .wav">
-          <audio :src="`http://localhost:8000/files/${video.name}`" :id="'audio_' + index"></audio>
+          <audio :src="`http://localhost:8000/files/${video.id}`" :id="'audio_' + index"></audio>
           <div class="video-card-control">
             <img
               @click="playAudio(index)"
               src="../assets/play.png"
               width="22px"/>
             <img
-                @click="downloadFile(video.name)"
+                @click="downloadFile(video.id)"
                 src="../assets/download.png"
                 alt="Значок для скачивания файла"
                 width="22px">
             <img
-                @click="transcribeVideo(video.name)"
+                @click="transcribeVideo(video.id)"
                 src="../assets/speech.png"
                 width="22px"
                 alt="">
@@ -106,29 +113,29 @@
 
         <!-- Если это видео файл формата .mp4 -->
         <div class="video-card" v-if="video.format === 'mp4'">
-          <video :src="`http://localhost:8000/files/${video.name}`" controls width="130" height="100"></video>
+          <video :src="`http://localhost:8000/files/${video.id}`" controls width="130" height="100"></video>
 
           <div class="video-card-control">
             <img
-                @click="playVideoInModal(video.name)"
+                @click="playVideoInModal(video.id)"
                 src="../assets/play.png"
                 width="22px">
             <img
-                @click="this.$router.push({name: 'Video Player', params: {id: video.name}})"
+                @click="this.$router.push({name: 'Video Player', params: {id: video.id}})"
                 class = "pencil"
                 src="../assets/pencil.png"
                 alt="Значок для редактирования видео"
                 width="24px">
 
             <img
-                @click="downloadFile(video.name)"
+                @click="downloadFile(video.id)"
                 src="../assets/download.png"
                 class = "download"
                 alt="Значок для скачивания файла"
                 width="22px">
 
             <img
-                @click="downloadAudio(video.name)"
+                @click="extractAudio(video.id)"
                 src="../assets/extract_audio.png"
                 class = "audio"
                 alt="Значок для извлечения аудио из видео"
@@ -140,6 +147,10 @@
 
       </div>
     </div>
+  </div>
+
+  <div v-else class="unauthorized">
+    <Signup></Signup>
   </div>
 
   <modal v-show="showModal" @close="showModal = false">
@@ -185,5 +196,10 @@
 
   .name {
     margin-top: 10px;
+  }
+
+  .unauthorized {
+    margin-top: 50px;
+    text-align: center;
   }
 </style>
