@@ -77,6 +77,10 @@
       playVideoInModal(name) {
         this.currentVideoInModal = "http://localhost:8000/files/" + name;
         this.showModal = true;
+      },
+      async deleteFile(id) {
+        await fileService.deleteFile(id);
+        this.$router.push({ name: 'Files' });
       }
   }}
 
@@ -91,9 +95,9 @@
 
         <!-- Если это аудио файл формата .wav -->
         <div class="video-card" v-if="video.format === 'wav'">
-          <img src="../assets/wav-file.png" alt="Значок файла формата .wav">
+          <img class="audio-img" src="../assets/wav-file.png" height="100" alt="Значок файла формата .wav">
           <audio :src="`http://localhost:8000/files/${video.id}`" :id="'audio_' + index"></audio>
-          <div class="video-card-control">
+          <div class="video-card-control audio-control">
             <img
               @click="playAudio(index)"
               src="../assets/play.png"
@@ -108,12 +112,17 @@
                 src="../assets/speech.png"
                 width="22px"
                 alt="">
+            <img
+                @click="deleteFile(video.id)"
+                src="../assets/del-file.png"
+                alt="Значок для удаления файла"
+                width="22px">
           </div>
         </div>
 
         <!-- Если это видео файл формата .mp4 -->
         <div class="video-card" v-if="video.format === 'mp4'">
-          <video :src="`http://localhost:8000/files/${video.id}`" controls width="130" height="100"></video>
+          <video :src="`http://localhost:8000/files/${video.id}`" width="200" height="160"></video>
 
           <div class="video-card-control">
             <img
@@ -130,16 +139,20 @@
             <img
                 @click="downloadFile(video.id)"
                 src="../assets/download.png"
-                class = "download"
                 alt="Значок для скачивания файла"
                 width="22px">
 
             <img
                 @click="extractAudio(video.id)"
                 src="../assets/extract_audio.png"
-                class = "audio"
                 alt="Значок для извлечения аудио из видео"
                 width="22px">
+
+            <img
+              @click="deleteFile(video.id)"
+              src="../assets/del-file.png"
+              alt="Значок для удаления файла"
+              width="22px">
           </div>
         </div>
 
@@ -168,13 +181,14 @@
     width: 95%;
     margin: 60px auto;
     display: flex;
+    flex-wrap: wrap;
     padding: 25px;
     background: #f4f3f9;
   }
 
   .card {
-    position: relative;
     margin-right: 50px;
+    margin-top: 20px;
   }
 
   .card p {
@@ -182,16 +196,18 @@
     max-width: 130px;
   }
 
-
   .video-card {
+    width: 100%;
     display: flex;
+    flex-direction: column;
   }
 
   .video-card-control {
-    margin-left: 7px;
+    margin-top: 8px;
     display: flex;
     justify-content: space-between;
-    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
   .name {
@@ -201,5 +217,13 @@
   .unauthorized {
     margin-top: 50px;
     text-align: center;
+  }
+
+  .audio-img {
+    margin-top: 35px;
+  }
+
+  .audio-control {
+    margin-top: 35px;
   }
 </style>

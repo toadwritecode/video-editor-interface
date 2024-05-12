@@ -38,6 +38,14 @@ class FileService {
         });
     }
 
+    deleteFile(id) {
+        return client.delete(`/files/${id}`, {
+            headers: {
+                Authorization: `Bearer ${store.getters.getAccessToken}`
+            }
+        });
+    }
+
 }
 
 export default new FileService();
