@@ -34,7 +34,7 @@ export default createStore({
         refreshToken(context) {
             return new Promise((resolve, reject) => {
                 client
-                    .post("/token/refresh/", {
+                    .post("/authenticate/token/refresh/", {
                         refresh: context.state.refreshToken,
                     })
                     .then((response) => {
