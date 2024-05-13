@@ -73,7 +73,7 @@
   <div v-if="store.getters.isAuthenticated" class="card">
     <div class="drag-area" @dragover.prevent="onDragOver" @dragleave.prevent="onDragLeave" @drop.prevent="onDrop">
       <span v-if="!isDragging">
-        Перетащте видео сюда или
+        Перетащите видео сюда или
         <span class="select" role="button" @click="selectFiles">
           Выберите файл
         </span>
