@@ -2,12 +2,19 @@ import { createRouter, createWebHistory } from "vue-router";
 import VideoPlayer from "@/components/VideoPlayer.vue";
 import FileUploader from "@/components/FileUploader.vue";
 import Files from "@/components/Files.vue";
+import AudioPlayer from "@/components/AudioPlayer.vue";
 
 const routes = [
     {
         path: "/video-player/:id",
         name: "Video Player",
         component: () => VideoPlayer,
+        props: true
+    },
+    {
+        path: "/audio-player/:id/:text",
+        name: "Audio Player",
+        component: () => AudioPlayer,
         props: true
     },
     {

@@ -23,12 +23,14 @@
       const files = await fileService.findAll();
       for (const file of files) {
         const fileId = await fileService.generateFileId(file['name']);
+        console.log(file)
         this.videos.push(
             {
               id: fileId,
               name: file['name'],
               path: file['path'],
-              format: file['format']
+              format: file['format'],
+              text: file['text']
             }
         );
       }
@@ -95,7 +97,8 @@
 
         <!-- Если это аудио файл формата .wav -->
         <div class="video-card" v-if="video.format === 'wav'">
-          <img class="audio-img" src="../assets/wav-file.png" height="100" alt="Значок файла формата .wav">
+          <img @click="this.$router.push({name: 'Audio Player', params: {id: video.id, text: video.text}})"
+               class="audio-img" src="../assets/wav-file.png" height="100" alt="Значок файла формата .wav">
           <audio :src="`http://localhost:8000/files/${video.id}`" :id="'audio_' + index"></audio>
           <div class="video-card-control audio-control">
             <img
