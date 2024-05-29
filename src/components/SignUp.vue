@@ -38,7 +38,7 @@
     <input
         class="btn btn--primary btn--login"
         type="submit"
-        value="Зарегестрироваться"
+        value="Зарегистрироваться"
     />
   </form>
 </template>

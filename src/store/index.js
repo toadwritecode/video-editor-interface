@@ -28,7 +28,7 @@ export default createStore({
         },
         getAccessToken: (state) => {
             return state.accessToken;
-        }
+        },
     },
     actions: {
         refreshToken(context) {

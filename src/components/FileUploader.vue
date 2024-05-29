@@ -2,15 +2,8 @@
   import fileUploader from "@/services/FileUploader.js";
   import store from "@/store/index.js";
   import Signup from "@/components/SignUp.vue";
-  import { Bar } from 'vue-chartjs'
-  import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
-  ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
   export default {
-    mounted() {
-      this.processData();
-      this.renderChart();
-    },
-    components: {Signup, BarChart: Bar},
+    components: {Signup},
     computed: {
       store() {
         return store
@@ -42,16 +35,6 @@
       }
     },
     methods: {
-      processData() {
-          const timeAxis = [0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1];
-          const noteAxis = [null, null, null, null, 'D', 'D', 'D'];
-
-          this.chartData.labels = timeAxis.map(time => time.toString());
-          this.chartData.datasets[0].data = noteAxis.map(note => (note === null ? '' : note));
-        },
-        renderChart() {
-          this.$refs.chart.renderChart(this.data, this.options);
-        },
       selectFiles() {
         this.$refs.fileInput.click();
       },
@@ -104,7 +87,6 @@
 </script>
 
 <template>
-  <bar-chart :data="chartData" :options="options"/>
 
   <div v-if="store.getters.isAuthenticated" class="card">
     <div class="drag-area" @dragover.prevent="onDragOver" @dragleave.prevent="onDragLeave" @drop.prevent="onDrop">
