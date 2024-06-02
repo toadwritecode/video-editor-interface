@@ -1,77 +1,82 @@
 <template>
-  <div class="container">
-<!--  <img :src="encodeURI(`http://localhost:8000/notes_segment/f817b2ce-17db-4dcc-84bb-2f042e93dffc`)" alt="">-->
-  <Bubble :data="data" :options="options"/>
-    </div>
+  <div class="container mt-5">
+    <h2 class="mb-4 text-center">Vue 3 Vuechart Js 5 Bar Chart Example</h2>
+    <Scatter id="my-chart-id" v-if="this.loaded" :options="chartOptions" :data="chartData" />
+  </div>
 </template>
 
 <script>
-import {
-  Chart as ChartJS,
-  Tooltip,
-  Legend,
-  PointElement,
-  LinearScale
-} from 'chart.js'
-import { Bubble } from 'vue-chartjs'
+import { Scatter } from 'vue-chartjs'
+
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement} from 'chart.js'
 import AudioService from "@/services/AudioService.js";
 
-ChartJS.register(LinearScale, PointElement, Tooltip, Legend)
+ChartJS.register(ChartDataLabels, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement)
 
 export default {
-  components: {
-    Bubble
-  },
-  data() {
-    return {
-      options: {
-        responsive: true,
-        maintainAspectRatio: true
-      },
-      data: {
-        datasets: [
+  name: 'BarChart',
+  components: { Scatter },
+
+  async mounted() {
+    const notes = await AudioService.getNotesSegment();
+
+    console.log(notes);
+
+    notes.forEach(note => {
+       this.chartData.datasets.push({
+        data: [
           {
-            label: 'Эталонный вокал',
-            backgroundColor: '#7C8CF8',
-            data: [
-            ]
+            x: note.start,
+            y: note.frequency
           },
           {
-            label: 'Собственный вокал',
-            backgroundColor: '#f87979',
-            data: [
-                              {
-
-                r: 10,
-                x: 3.01,
-                y: 293.66
-              },
-
-              {
-                x: 3.02,
-                y: 293.66,
-                r: 10
-              }
-            ]
+            x: note.end,
+            y: note.frequency
           }
-        ]
-      }
+        ],
+        borderColor: '#7C8CF8',
+        borderWidth: 15,
+        pointBackgroundColor: '#7C8CF8',
+        pointBorderColor: '#7C8CF8',
+        pointRadius: 1,
+        pointHoverRadius: 1,
+        fill: false,
+        tension: 0,
+        showLine: true,
+        label: note.note
+      })
+    });
+    console.log(this.chartData);
+    this.loaded = true;
+  },
+
+  data() {
+    return {
+      loaded: false,
+      chartData: {
+        datasets: []
+      },
+      chartOptions: {
+        scaleShowValues: true,
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: 'Сравнение двух аудио файлов'
+          },
+          labels: {
+            render: 'percentage',
+            color: 'white'
+          }
+        },
+      },
+      plugins: [ChartDataLabels]
     }
-  },
-  methods: {
-    async loadCurrentChart() {
-      let data = await AudioService.getNotesSegment()
-      let arr = [];
-      for (let i = 0; i < data.data.timeAxis.length; i++) {
-        arr.push({x: data.data.timeAxis[i], y: data.data.freq[i], r: 10})
-      }
-      console.log(arr)
-      this.data.datasets[0].data = arr
-      console.log(this.data)
-    },
-  },
-  mounted() {
-    this.loadCurrentChart();
   }
 }
 </script>
