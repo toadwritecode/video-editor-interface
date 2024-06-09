@@ -37,6 +37,9 @@ client.interceptors.response.use(undefined, function (err) {
                 return Promise.reject(err);
             });
     }
+    if (err.config && err.response && err.response.status === 400) {
+        return Promise.reject(err)
+    }
 });
 
 export { client };

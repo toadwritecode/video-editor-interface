@@ -62,6 +62,9 @@ export default {
     signUp() {
       console.log("signUp");
       authenticationService.signUp({username: this.username, password: this.password})
+          .then(response =>
+              this.$vueAlert.alert("Пользователь успешно зарегестрирован", "Регистрация", "success"))
+          .catch(error => this.$vueAlert.alert("Пользователь с таким именем уже существует", "Ошибка регистрации", "error"))
     },
     showPassword() {
       if (this.type === "password") {
