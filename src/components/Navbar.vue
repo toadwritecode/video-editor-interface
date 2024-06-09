@@ -116,7 +116,7 @@ export default {
             this.$router.push({ name: "File Upload" });
           })
           .catch((err) => {
-            console.log(err);
+            this.$vueAlert.alert("Неверный логин или пароль", "Ошибка авторизации", "error");
             this.wrongCred = true; // if the credentials were wrong set wrongCred to true
           });
       this.showModalLogin = false;
