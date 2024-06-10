@@ -96,7 +96,7 @@ export default {
     },
 
     cropVideo() {
-      videoService.cropVideo(this.intervals, this.id)
+      videoService.editVideo(this.intervals, this.id)
     }
   },
 };

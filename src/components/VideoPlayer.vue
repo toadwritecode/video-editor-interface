@@ -1,14 +1,20 @@
 <template>
+  <div>
+  <LoadingScreen v-if="isLoading" />
   <div class="container">
-    <video :src="`http://localhost:8000/files/${id}`" ref="video" controls></video>
+    <video :src="encodeURI(`http://localhost:8000/files/${id}`)" ref="video" controls></video>
   </div>
 
   <div class="control-container">
     <div class="cut-container">
+      <input v-model="speed" class="interval-select" type="text" placeholder="Скорость видео">
+    </div>
+
+    <div class="cut-container">
       <input v-model="startTime" class="interval-select" type="text" placeholder="Время от">
       <input v-model="endTime" class="interval-select" type="text" placeholder="Время до">
+      <input v-model="intervalSpeed" class="interval-select" type="text" placeholder="Скорость отрывка">
       <input v-model="times" class="interval-select" type="text" placeholder="Кол-во повторов">
-
       <button class="add-interval-button" @click="addTimeCode">Добавить промежуток</button>
     </div>
 
@@ -16,24 +22,31 @@
       <div class="intervals" v-for="(interval, index) in intervals" :key="index">
         <div class="interval">{{interval.start}}</div>
         <div class="interval">{{interval.end}}</div>
+        <div class="interval">{{interval.speed}}</div>
         <div class="play" @click="play(index)"><img src="../assets/icons8-play-button-48.png" alt="" width="32"></div>
         <img class="delete" @click="deleteImage" src="../assets/bascket.png" width="36px"/>
       </div>
     </div>
 
-    <button class="cut-button" @click="cropVideo">Обрезать видео</button>
+    <button class="cut-button" @click="cropVideo">Готово</button>
   </div>
-
+</div>
 </template>
 
 <script>
 import videoService from "@/services/VideoService.js";
-
+import LoadingScreen from '@/components/LoadingScreen.vue';
 export default {
+    components: {
+    LoadingScreen
+  },
   props: ['id'],
   data() {
     return {
+      isLoading: false,
       intervals: [],
+      speed: null,
+      intervalSpeed: null,
       startTime: null,
       endTime: null,
       times: null
@@ -48,6 +61,7 @@ export default {
       const start = parseFloat(this.startTime);
       const end = parseFloat(this.endTime);
       const times = parseFloat(this.times);
+      const speed = parseFloat(this.intervalSpeed);
 
       let invalidInterval = false;
       for (const interval of this.intervals) {
@@ -60,7 +74,7 @@ export default {
         return;
       }
 
-      this.intervals.push({"start": start, "end": end, "times": times});
+      this.intervals.push({"start": start, "end": end, "speed": speed, "times": times});
     },
     play(index) {
       const frame = this.intervals[index]
@@ -83,8 +97,37 @@ export default {
     },
 
     cropVideo() {
-      videoService.cropVideo(this.intervals, this.id)
-    }
+      this.isLoading = true;
+      videoService.editVideo(this.intervals, this.id, this.speed)
+          .then((data) => {
+            return this.checkTaskStatus(data.taskId);
+          })
+          .then(() => {
+            this.$router.push({ name: "Files" })
+          })
+          .catch((error) => {
+            console.error('Произошла ошибка при проверке статуса таски:', error);
+          });
+    },
+
+    checkTaskStatus(taskId) {
+    return new Promise((resolve, reject) => {
+        videoService.getResult(taskId)
+            .then((response) => {
+                if (response.status === 'processing') {
+                    setTimeout(() => resolve(this.checkTaskStatus(taskId)), 10000);
+                } else if (response.status === 'ok') {
+                    this.isLoading = false;
+                    resolve();
+                } else {
+                    reject(new Error('Unexpected task status'));
+                }
+            })
+            .catch((error) => {
+                reject(error);
+            });
+    });
+}
   },
 };
 </script>
@@ -172,7 +215,7 @@ export default {
 .delete {
   position: absolute;
   z-index: 999;
-  left: 225px;
+  left: 320px;
   top: -1px;
   color: #fe0000;
 }

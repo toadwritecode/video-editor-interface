@@ -3,16 +3,18 @@ import store from "@/store/index.js";
 
 class VideoService {
 
-    cropVideo(intervals, filename) {
+    editVideo(intervals, filename, videoSpeed) {
 
-        client.post("/video/crop/", {
+        return client.post("/video/crop/", {
             frames: intervals.map(interval => {
                 return {
                     cutFrom: interval.start,
+                    speed: interval.speed,
                     cutTo: interval.end,
                     times: interval.times
                 };
-            })
+            }),
+            speed: videoSpeed
         }, {
             headers: {
                 Authorization: `Bearer ${store.getters.getAccessToken}`
@@ -36,8 +38,8 @@ class VideoService {
     }
 
     getResult(taskId) {
-
-        return client.get("/video/tasks/result/", {
+        console.log(taskId);
+        return client.get(`/video/tasks/result/`, {
             headers: {
                 Authorization: `Bearer ${store.getters.getAccessToken}`
             },
