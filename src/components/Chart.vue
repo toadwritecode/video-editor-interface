@@ -2,6 +2,24 @@
   <div class="container mt-5">
     <Scatter id="my-chart-id" v-if="this.loaded" :options="chartOptions" :data="chartData" />
   </div>
+
+  <div>
+    <table>
+      <thead>
+      <tr>
+        <th>Частота</th>
+        <th>Нота</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr v-for="(value, key) in aaa" :key="key">
+        <td>{{ key }}</td>
+        <td>{{ value }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
 </template>
 
 <script>
@@ -20,6 +38,7 @@ export default {
     const notes = await AudioService.getNotesSegment();
 
     notes.forEach(note => {
+      this.aaa[note['frequency']] = note['note'];
        this.chartData.datasets.push({
         data: [
           {
@@ -47,6 +66,7 @@ export default {
     const notes2 = await AudioService.getNotesSegment2();
 
     notes2.forEach(note => {
+      this.aaa[note['frequency']] = note['note'];
       this.chartData.datasets.push({
         data: [
           {
@@ -71,11 +91,13 @@ export default {
       })
     });
 
+    console.log(this.aaa)
     this.loaded = true;
   },
 
   data() {
     return {
+      aaa: {},
       loaded: false,
       chartData: {
         datasets: []
@@ -91,8 +113,24 @@ export default {
             text: 'Сравнение двух аудио файлов'
           }
         },
+        scales: {
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'Hz',
+            }
+          }]
+        }
       }
     }
   }
 }
 </script>
+<script setup lang="ts">
+</script>
+
+<style scoped>
+table {
+  margin: 0 auto;
+}
+</style>
