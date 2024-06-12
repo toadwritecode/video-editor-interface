@@ -16,6 +16,7 @@
         currentVideoInModal: "",
         showModal: false,
         videos: [],
+        selected: []
       };
     },
 
@@ -97,6 +98,7 @@
 
         <!-- Если это аудио файл формата .wav -->
         <div class="video-card" v-if="video.format === 'wav'">
+          <input class="checkbox" type="checkbox" v-model="selected" :value="video.name" />
           <img @click="this.$router.push({name: 'Audio Player', params: {id: video.id, text: video.text}})"
                class="audio-img" src="../assets/wav-file.png" height="100" alt="Значок файла формата .wav">
           <audio :src="`http://localhost:8000/files/${video.id}`" :id="'audio_' + index"></audio>
@@ -169,6 +171,11 @@
     <Signup></Signup>
   </div>
 
+  <a v-if="selected.length > 1 && selected.length < 3"
+          class="btn"
+          type="button"
+          @click="this.$router.push({name: 'Chart'})">Сравнить аудио</a>
+
   <modal v-show="showModal" @close="showModal = false">
     <template v-slot:header>
       <div></div>
@@ -189,7 +196,14 @@
     background: #f4f3f9;
   }
 
+  .checkbox {
+    position: absolute;
+    left: 135px;
+    top: 25px;
+  }
+
   .card {
+    position: relative;
     margin-right: 50px;
     margin-top: 20px;
   }
@@ -228,5 +242,17 @@
 
   .audio-control {
     margin-top: 35px;
+  }
+
+  .btn {
+    position: absolute;
+    right: 50%;
+    outline: 0;
+    border: 0;
+    color: #fff;
+    border-radius: 4px;
+    font-weight: 400;
+    padding: 8px 13px;
+    background: #fe0000;
   }
 </style>
