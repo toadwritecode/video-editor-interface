@@ -36,6 +36,7 @@
 <script>
 import videoService from "@/services/VideoService.js";
 import LoadingScreen from '@/components/LoadingScreen.vue';
+import Utility from "@/services/Utility.js";
 export default {
     components: {
     LoadingScreen
@@ -100,7 +101,7 @@ export default {
       this.isLoading = true;
       videoService.editVideo(this.intervals, this.id, this.speed)
           .then((data) => {
-            return this.checkTaskStatus(data.taskId);
+            return Utility.checkTaskStatus(data.taskId);
           })
           .then(() => {
             this.$router.push({ name: "Files" })
@@ -109,25 +110,6 @@ export default {
             console.error('Произошла ошибка при проверке статуса таски:', error);
           });
     },
-
-    checkTaskStatus(taskId) {
-    return new Promise((resolve, reject) => {
-        videoService.getResult(taskId)
-            .then((response) => {
-                if (response.status === 'processing') {
-                    setTimeout(() => resolve(this.checkTaskStatus(taskId)), 10000);
-                } else if (response.status === 'ok') {
-                    this.isLoading = false;
-                    resolve();
-                } else {
-                    reject(new Error('Unexpected task status'));
-                }
-            })
-            .catch((error) => {
-                reject(error);
-            });
-    });
-}
   },
 };
 </script>

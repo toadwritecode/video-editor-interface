@@ -4,18 +4,22 @@
   import modal from "@/components/Modal.vue";
   import store from "@/store/index.js";
   import Signup from "@/components/SignUp.vue";
+  import Utility from "@/services/Utility.js";
+  import LoadingScreen from "@/components/LoadingScreen.vue";
   export default {
     computed: {
       store() {
         return store
       }
     },
-    components: {Signup, modal},
+    components: {LoadingScreen, Signup, modal},
     data() {
       return {
+        isLoading: false,
         currentVideoInModal: "",
         showModal: false,
         videos: [],
+        transcribeTaskId: null,
         selected: []
       };
     },
@@ -42,29 +46,33 @@
         fileService.getFile(fileName);
       },
       transcribeVideo(filename) {
-        videoService.transcribe(filename).then(transcribeResponse => {
-        const interval = setInterval(() => {
-          console.log("Таска запущена")
-          videoService.getResult(transcribeResponse.taskId)
-              .then(response => {
-                if (response.status === "ok") {
-                  alert(response.result.text)
-                  clearInterval(interval);
-                }
-              });
-        }, 10000)});
+        this.isLoading = true;
+        videoService.transcribe(filename)
+            .then(data => {
+              this.transcribeTaskId = data.taskId;
+              return Utility.checkTaskStatus(data.taskId);
+            })
+            .then((response) => {
+              console.log(response.result)
+              localStorage.setItem(this.transcribeTaskId, response.result)
+              this.$router.push({name: "Audio Player", params: {id: this.transcribeTaskId}})
+            })
+            .catch((error) => {
+              console.error('Произошла ошибка при проверке статуса таски:', error);
+            });
       },
+
       extractAudio(filename) {
-        videoService.extractAudio(filename).then(taskResponse => {
-          const interval = setInterval(() => {
-            videoService.getResult(taskResponse.taskId)
-                .then(response => {
-                  if (response.status === "ok") {
-                    this.downloadFile(response.result)
-                    clearInterval(interval);
-                  }
-                });
-        }, 10000)});
+        this.isLoading = true;
+        videoService.extractAudio(filename).then(data => {
+          return Utility.checkTaskStatus(data.taskId);
+        })
+            .then(() => {
+              location.reload()
+            })
+            .catch((error) => {
+              console.error('Произошла ошибка при проверке статуса таски:', error);
+            });
       },
       playAudio(index) {
         const ref = "audio_" + index;
@@ -83,13 +91,14 @@
       },
       async deleteFile(id) {
         await fileService.deleteFile(id);
-        this.$router.push({ name: 'Files' });
+        location.reload()
       }
   }}
 
 </script>
 
 <template>
+  <LoadingScreen v-if="isLoading" />
   <div v-if="store.getters.isAuthenticated" class="container">
     <div class="card" v-for="(video, index) in videos" :key="index">
 

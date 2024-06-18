@@ -6,11 +6,16 @@
     <audio :src="`http://localhost:8000/files/${id}`" :id="id"></audio>
     <div class="audio-controller">
       <img
-          @click="playAudio(index)"
+          @click="play(id)"
           src="../assets/play.png"
           alt="Значок проигрывания аудио файла"/>
     </div>
-    <p>{{this.text}}</p>
+    <div class="transcript">
+      <h2>Распознанный текст из аудио</h2>
+           <div class="transcript-box">
+        <p>{{ this.text ? this.text : 'Это аудио еще не было распознано'}}</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -18,24 +23,50 @@
 .container {
   display: flex;
   flex-direction: column;
-  width: 75%;
-  margin: 50px auto;
-}
-
-.audio-image {
-  margin: 0 auto;
+  align-items: center;
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
 }
 
 .audio-image img {
-  width: 140px;
-}
-
-.audio-controller {
-  margin: 0 auto;
+  width: 96px;
+  height: 96px;
 }
 
 .audio-controller img {
-  width: 40px;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.transcript {
+  margin-top: 20px;
+  text-align: center;
+  width: 100%;
+}
+
+.transcript h2 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.transcript-box {
+  border: 1px solid #000;
+  padding: 10px;
+  width: 99%;
+  overflow-wrap: anywhere;
+  font-family: monospace;
+}
+
+.transcript-box p {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 1.2em;
+  line-height: 1.4;
 }
 </style>
 
@@ -43,14 +74,19 @@
 import videoService from "@/services/VideoService.js";
 
 export default {
-  props: ['id', 'text'],
+  props: ['id'],
   data() {
     return {
       intervals: [],
+      text: null,
       startTime: null,
       endTime: null,
       times: null
     };
+  },
+  mounted() {
+    this.text = localStorage.getItem(this.id)
+    // console.log(this.id)
   },
   methods: {
     deleteImage(index) {
