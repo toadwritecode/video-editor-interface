@@ -13,7 +13,7 @@ const routes = [
         props: true
     },
     {
-        path: "/audio-player/:id/:text",
+        path: "/audio-player/:id",
         name: "Audio Player",
         component: () => AudioPlayer,
         props: true
