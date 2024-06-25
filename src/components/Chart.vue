@@ -1,136 +1,58 @@
 <template>
-  <div class="container mt-5">
-    <Scatter id="my-chart-id" v-if="this.loaded" :options="chartOptions" :data="chartData" />
-  </div>
+  <div class="container">
+    <div>
+      <img class="chart" src="../assets/img.png" alt="График">
+    </div>
 
-  <div>
-    <table>
-      <thead>
-      <tr>
-        <th>Частота</th>
-        <th>Нота</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="(value, key) in aaa" :key="key">
-        <td>{{ key }}</td>
-        <td>{{ value }}</td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+    <div class="btn"
+       type="button"
+       @click="this.visible = !this.visible">Рекомендации
+    </div>
 
+    <div class="tutorials" v-if="visible">
+      <a href="https://youtu.be/8usdrulk8GE?si=JDVJEPFgLGDaIVUd"><img class= "tutorial" src="../assets/img_1.png"/></a>
+      <a href="https://youtu.be/hf9AADYdUlQ?si=cVSUOKUODzEw-_aK"><img class= "tutorial" src="../assets/img_2.png"/></a>
+      <a href="https://youtu.be/sq0rKfN3nKY?si=GrcejWAhvyrU5rk5"><img class= "tutorial" src="../assets/img_3.png"/></a>
+      <a href="https://youtu.be/OOctfy2d0Mg?si=z8-SyJyYsiO9TyUi"><img class= "tutorial" src="../assets/img_4.png"/></a>
+    </div>
+  </div>
 </template>
 
 <script>
-import { Scatter } from 'vue-chartjs'
-
-import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement} from 'chart.js'
-import AudioService from "@/services/AudioService.js";
-
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement)
-
 export default {
-  name: 'BarChart',
-  components: { Scatter },
-
-  async mounted() {
-    const notes = await AudioService.getNotesSegment();
-
-    notes.forEach(note => {
-      this.aaa[note['frequency']] = note['note'];
-       this.chartData.datasets.push({
-        data: [
-          {
-            x: note.start,
-            y: note.frequency
-          },
-          {
-            x: note.end,
-            y: note.frequency
-          }
-        ],
-        borderColor: '#7C8CF8',
-        borderWidth: 15,
-        pointBackgroundColor: '#7C8CF8',
-        pointBorderColor: '#7C8CF8',
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        fill: false,
-        tension: 0,
-        showLine: true,
-        label: note.note
-      })
-    });
-
-    const notes2 = await AudioService.getNotesSegment2();
-
-    notes2.forEach(note => {
-      this.aaa[note['frequency']] = note['note'];
-      this.chartData.datasets.push({
-        data: [
-          {
-            x: note.start,
-            y: note.frequency
-          },
-          {
-            x: note.end,
-            y: note.frequency
-          }
-        ],
-        borderColor: '#da0064',
-        borderWidth: 15,
-        pointBackgroundColor: '#da0064',
-        pointBorderColor: '#da0064',
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        fill: false,
-        tension: 0,
-        showLine: true,
-        label: note.note
-      })
-    });
-
-    console.log(this.aaa)
-    this.loaded = true;
-  },
-
   data() {
     return {
-      aaa: {},
-      loaded: false,
-      chartData: {
-        datasets: []
-      },
-      chartOptions: {
-        responsive: true,
-        plugins: {
-          legend: {
-            display: false
-          },
-          title: {
-            display: true,
-            text: 'Сравнение двух аудио файлов'
-          }
-        },
-        scales: {
-          yAxes: [{
-            scaleLabel: {
-              display: true,
-              labelString: 'Hz',
-            }
-          }]
-        }
-      }
+      visible: false
     }
   }
 }
 </script>
-<script setup lang="ts">
-</script>
 
 <style scoped>
-table {
+.container {
+  width: 100%;
+}
+.chart {
+  display: block;
   margin: 0 auto;
 }
+.btn {
+  text-align: center;
+  width: 8%;
+  margin: 0 auto;
+  outline: 0;
+  border: 0;
+  color: #fff;
+  border-radius: 4px;
+  font-weight: 400;
+  padding: 8px 13px;
+  background: #fe0000;
+}
+
+.tutorials {
+  display: flex;
+  margin: 45px 50px;
+  justify-content: space-between;
+}
+
 </style>

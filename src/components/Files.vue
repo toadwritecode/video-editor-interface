@@ -13,6 +13,7 @@
     components: {Signup, modal},
     data() {
       return {
+        showDiffModal: false,
         currentVideoInModal: "",
         showModal: false,
         videos: [],
@@ -84,6 +85,9 @@
       async deleteFile(id) {
         await fileService.deleteFile(id);
         this.$router.push({ name: 'Files' });
+      },
+      compareFiles() {
+        setTimeout(() => this.showDiffModal = true, 3000)
       }
   }}
 
@@ -174,7 +178,7 @@
   <a v-if="selected.length > 1 && selected.length < 3"
           class="btn"
           type="button"
-          @click="this.$router.push({name: 'Chart'})">Сравнить аудио</a>
+          @click="compareFiles()">Сравнить аудио</a>
 
   <modal v-show="showModal" @close="showModal = false">
     <template v-slot:header>
@@ -182,6 +186,20 @@
     </template>
     <template v-slot:body>
       <video :src="currentVideoInModal" controls width="500" height="500"></video>
+    </template>
+  </modal>
+
+  <modal v-show="showDiffModal" @close="showDiffModal = false">
+    <template v-slot:header>
+      <div></div>
+    </template>
+    <template v-slot:body>
+      <div class="change">
+        <p class="change-text">Ваша схожесть с оригиналом 38%</p>
+        <a class="change-btn"
+           type="button"
+           @click="this.$router.push({name: 'Chart'})">Детали</a>
+      </div>
     </template>
   </modal>
 </template>
@@ -247,6 +265,26 @@
   .btn {
     position: absolute;
     right: 50%;
+    outline: 0;
+    border: 0;
+    color: #fff;
+    border-radius: 4px;
+    font-weight: 400;
+    padding: 8px 13px;
+    background: #fe0000;
+  }
+
+  .change {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .change-text {
+    text-align: center;
+  }
+
+  .change-btn {
+    margin: 25px auto;
     outline: 0;
     border: 0;
     color: #fff;
